@@ -56,7 +56,7 @@ void	ft_copylines(char **new_line, char *line, char *lines)
 	(*new_line)[ind] = '\0';
 }
 
-char	*ft_writeline(char *lines, char *line, int malloc_flag)
+char	*ft_writeline(char *lines, char *line, int *malloc_flag)
 {
 	char	*new_line;
 	size_t	lines_len;
@@ -67,7 +67,7 @@ char	*ft_writeline(char *lines, char *line, int malloc_flag)
 	new_line = malloc(lines_len + ft_strlen(line) + 1);
 	if (!new_line)
 	{
-		malloc_flag = 1;
+		*malloc_flag = 1;
 		ft_freestr(line);
 		return (NULL);
 	}

@@ -41,7 +41,7 @@ typedef struct	s_cub
 
 void	init_cub(t_cub *cub);
 int	valid_map(char **argv);
-void	validate_horizontal(t_cub *cub, char **line);
+void	validate_horizontal(t_cub *cub);
 void	validate_middle(t_cub *cub, char **line);
 int	open_validate_file(t_cub *cub, char *map_path, char *ext);
 void	validate_type_identifier(t_cub *cub, char **type_id);

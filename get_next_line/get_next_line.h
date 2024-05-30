@@ -27,8 +27,8 @@
 
 void	ft_freestr(char *s);
 size_t	ft_strlen(const char *s);
-char	*ft_writeline(char *lines, char *line, int malloc_flag);
+char	*ft_writeline(char *lines, char *line, int *malloc_flag);
 size_t	ft_newline(char *s);
-char	*get_next_line(int fd, int malloc_flag);
+char	*get_next_line(int fd, int *malloc_flag);
 
 #endif

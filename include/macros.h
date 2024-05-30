@@ -16,6 +16,9 @@ enum	e_flags
 	SUCCESS,
 	FAILURE,
 	YES,
+	NA,
+	EMP_LINE,
+	TOT_TIDS = 6,
 };
 
 enum	e_directions

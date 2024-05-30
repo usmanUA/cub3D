@@ -1,3 +1,14 @@
+/* ************************************************************************** */
+/*                                                                            */
+/*                                                        :::      ::::::::   */
+/*   init_structs.c                                     :+:      :+:    :+:   */
+/*                                                    +:+ +:+         +:+     */
+/*   By: uahmed <uahmed@student.hive.fi>            +#+  +:+       +#+        */
+/*                                                +#+#+#+#+#+   +#+           */
+/*   Created: 2024/05/30 14:01:10 by uahmed            #+#    #+#             */
+/*   Updated: 2024/05/30 14:01:12 by uahmed           ###   ########.fr       */
+/*                                                                            */
+/* ************************************************************************** */
 
 #include "../../include/cub3d.h"
 
@@ -31,6 +42,14 @@ void	check_free_exit(t_cub *cub)
 		exit(EXIT_FAILURE);
 	if (cub->map == NULL)
 		exit(EXIT_FAILURE);
+}
+
+
+void	init_inds(t_indices *inds)
+{
+	inds->st = 0;
+	inds->end = 0;
+	inds->counter = 3;
 }
 
 void	init_tex_count(t_count *count)

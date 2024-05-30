@@ -66,7 +66,7 @@ char	*ft_freebuff_return(char *lines)
 	return (NULL);
 }
 
-char	*get_next_line(int fd, int malloc_flag)
+char	*get_next_line(int fd, int *malloc_flag)
 {
 	char		*line;
 	static char	lines[BUFFER_SIZE + 1];

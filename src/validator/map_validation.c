@@ -1,3 +1,14 @@
+/* ************************************************************************** */
+/*                                                                            */
+/*                                                        :::      ::::::::   */
+/*   map_validation.c                                   :+:      :+:    :+:   */
+/*                                                    +:+ +:+         +:+     */
+/*   By: uahmed <uahmed@student.hive.fi>            +#+  +:+       +#+        */
+/*                                                +#+#+#+#+#+   +#+           */
+/*   Created: 2024/05/30 14:01:33 by uahmed            #+#    #+#             */
+/*   Updated: 2024/05/30 14:01:35 by uahmed           ###   ########.fr       */
+/*                                                                            */
+/* ************************************************************************** */
 
 #include "../../include/cub3d.h"
 
@@ -79,16 +90,20 @@ void	validate_middle(t_cub *cub, char **line)
 	check_wall_unit(cub, line, c);
 }
 
-void	validate_horizontal(t_cub *cub, char **line)
+void	validate_horizontal(t_cub *cub)
 {
 	int	ind;
 
 	ind = -1;
-	while ((*line)[++ind]) // TODO: change logic if end is \n
+	// NOTE: what if the first map line is:
+	// 1       1 OR
+	//	   1 OR
+	//     1	
+	while ((*cub->line)[++ind])
 	{
-		if ((*line)[++ind] != '1')
+		if ((*cub->line)[++ind] != '1' && !ft_isspace(*cub->line[++ind]))
 		{
-			free(*line);
+			free(*cub->line);
 			exit(EXIT_FAILURE); // TODO: free mem, print error
 		}
 	}
