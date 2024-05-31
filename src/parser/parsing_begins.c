@@ -27,12 +27,12 @@ void	next_strings_end(char *line, int *end, int check_comma)
 	}
 }
 
-void	eof_malloc_check(t_cub *cub, char *line, int malloc_flag)
+void	eof_malloc_check(t_cub *cub, int malloc_flag)
 {
 	// TODO: take this function where gnl is called
-	if (line == NULL && malloc_flag == 1)
+	if (*cub->line == NULL && malloc_flag == 1)
 		exit(EXIT_FAILURE); // TODO: free mem
-	if (line == NULL && malloc_flag == 0)
+	if (*cub->line == NULL && malloc_flag == 0)
 		exit(EXIT_FAILURE); // TODO: free mem, print error
 }
 
@@ -294,7 +294,7 @@ void	parse_until_map(t_cub *cub, int fd)
 			tids++;
 	}
 	if (tids < TOT_TIDS)
-		exit(EXIT_FAILURE); // TODO: free mem, print error
+		free_vecs(cub, YES);
 }
 
 void	validate_push_horizontal(t_cub *cub)
@@ -311,13 +311,13 @@ void	validate_push_horizontal(t_cub *cub)
 	}
 }
 
-void	validate_push_middle(t_cub *cub, char **line)
+void	validate_push_middle(t_cub *cub)
 {
 	char	*dup_line;
 
-	validate_middle(cub, line);
-	dup_line = ft_strdup(*line);
-	free(*line);
+	validate_middle(cub);
+	dup_line = ft_strdup(*cub->line);
+	free(*cub->line);
 	if (vec_push(cub->map, &dup_line) == 0)
 	{
 		free(dup_line);
@@ -325,23 +325,49 @@ void	validate_push_middle(t_cub *cub, char **line)
 	}
 }
 
+int	last_line(t_cub *cub)
+{
+	int	ind;
+	int	len;
+
+	ind = -1;
+	len = ft_strlen(*cub->line);
+	while (++ind < len)
+	{
+		if (!ft_isspace(*cub->line[ind]))
+			break ;
+	}
+	if (ind == len)
+		exit(EXIT_FAILURE); // TODO: free mem, print error
+	ind = -1;
+	while (++ind < len)
+	{
+		if (*cub->line[ind] != '1' && !ft_isspace(*cub->line[ind]))
+			return (NA);
+	}
+	return (YES);
+}
+
 void	parse_map(t_cub *cub, int fd)
 {
-	char	*line;
 	int	malloc_flag;
 
 	malloc_flag = 0;
 	validate_push_horizontal(cub);
-	line = get_next_line(fd, &malloc_flag);
-	eof_malloc_check(cub, line, malloc_flag);
-	while (line)
+	*cub->line = get_next_line(fd, &malloc_flag);
+	eof_malloc_check(cub, malloc_flag);
+	while (*cub->line)
 	{
-		validate_push_middle(cub, &line);
-		line = get_next_line(fd, &malloc_flag);
-		eof_malloc_check(cub, line, malloc_flag);
+		if (last_line(cub))
+			break ;
+		if (*cub->line[0] == '\0' || *cub->line[0] == '0')
+			exit(EXIT_FAILURE); // TODO: free mem, print error
+		validate_push_middle(cub);
+		*cub->line = get_next_line(fd, &malloc_flag);
+		eof_malloc_check(cub, malloc_flag);
 	}
-	line = get_next_line(fd, &malloc_flag);
-	eof_malloc_check(cub, line, malloc_flag);
+	if (*cub->line == NULL)
+		exit(EXIT_FAILURE); // TODO: free mem, print error
 	validate_push_horizontal(cub);
 }
 
@@ -352,4 +378,5 @@ void	parse_file(t_cub *cub, char *map_path)
 	fd = open_validate_file(cub, map_path, ".cub");
 	parse_until_map(cub, fd);
 	parse_map(cub, fd);
+	close(fd);
 }

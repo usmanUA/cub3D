@@ -43,51 +43,51 @@ int	dir_char(char c)
 	return (0);
 }
 
-void	check_wall_unit(t_cub *cub, char **line, char c)
+void	check_wall_unit(t_cub *cub, char c)
 {
 	if (c != '1')
 	{
-		free(*line);
+		free(*cub->line);
 		exit(EXIT_FAILURE); // TODO: free mem, print error
 	}
 }
 
-void	check_dir_info(t_cub *cub, char **line, char c)
+void	check_dir_info(t_cub *cub, char c)
 {
 	if (cub->dir_info > 0)
 	{
-		free(*line);
+		free(*cub->line);
 		exit(EXIT_FAILURE); // TODO: free mem, print error
 	}
 }
 
-void	validate_middle(t_cub *cub, char **line)
+void	validate_middle(t_cub *cub)
 {
 	int	ind;
 	char	c;
 
 	// NOTE: check if the middle line is all 1?
 	ind = 0;
-	c = (*line)[ind];
-	check_wall_unit(cub, line, c);
-	while ((*line)[++ind] != '\n') // TODO: change logic if end is \n
+	c = (*cub->line)[ind];
+	check_wall_unit(cub, c);
+	while ((*cub->line)[++ind] != '\n') // TODO: change logic if end is \n
 	{
-		c = (*line)[ind];
+		c = (*cub->line)[ind];
 		if (dir_char(c))
 		{
-			check_dir_info(cub, line, c);
+			check_dir_info(cub, c);
 			cub->dir_info++;
 			continue;
 		}
 		if (c != '1' && c != '0')
 		{
-			free(*line);
+			free(*cub->line);
 			exit(EXIT_FAILURE); // TODO: free mem, print error
 		}
-		if ((*line)[ind+1] == '\n') // TODO: adjust to \n if last char is \n
+		if ((*cub->line)[ind+1] == '\n') // TODO: adjust to \n if last char is \n
 			break;
 	}
-	check_wall_unit(cub, line, c);
+	check_wall_unit(cub, c);
 }
 
 void	validate_horizontal(t_cub *cub)

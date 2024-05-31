@@ -18,8 +18,8 @@ void	free_vecs(t_cub *cub, int exit_fail)
 
 	vec_free(cub->textures_fds);
 	free(cub->textures_fds);
-	vec_free(cub->direction_info);
-	free(cub->direction_info);
+	vec_free(cub->textures_info);
+	free(cub->textures_info);
 	vec_free(cub->floor);
 	free(cub->floor);
 	vec_free(cub->ceiling);
@@ -34,14 +34,14 @@ void	check_free_exit(t_cub *cub)
 {
 	if (cub->textures_fds == NULL)
 		exit(EXIT_FAILURE);
-	if (cub->direction_info == NULL)
-		exit(EXIT_FAILURE);
+	if (cub->textures_info == NULL)
+		free_vecs(cub, YES);
 	if (cub->ceiling == NULL)
-		exit(EXIT_FAILURE);
+		free_vecs(cub, YES);
 	if (cub->floor == NULL)
-		exit(EXIT_FAILURE);
+		free_vecs(cub, YES);
 	if (cub->map == NULL)
-		exit(EXIT_FAILURE);
+		free_vecs(cub, YES);
 }
 
 
@@ -65,16 +65,16 @@ void	init_tex_count(t_count *count)
 static	void	init_vecs(t_cub *cub)
 {
 	vec_new(cub->textures_fds, 0, sizeof(int));
-	vec_new(cub->direction_info, 0, sizeof(int));
-	vec_new(cub->ceiling, 0, sizeof(int));
-	vec_new(cub->floor, 0, sizeof(int));
+	vec_new(cub->textures_info, 0, sizeof(int));
+	vec_new(cub->ceiling, 0, sizeof(int)); // TODO: change int to what it is
+	vec_new(cub->floor, 0, sizeof(int)); // TODO: change int to what it is
 	vec_new(cub->map, 0, sizeof(char **));
 }
 
 static	void	alloc_init_vecs(t_cub *cub)
 {
 	t_vec	*textures_fds;
-	t_vec	*direction_info;
+	t_vec	*textures_info;
 	t_vec	*ceiling;
 	t_vec	*floor;
 	t_vec	*map;
@@ -82,8 +82,8 @@ static	void	alloc_init_vecs(t_cub *cub)
 	textures_fds = (t_vec *)malloc(sizeof(t_vec));
 	cub->textures_fds = textures_fds;
 	check_free_exit(cub);
-	direction_info	= (t_vec *)malloc(sizeof(t_vec));
-	cub->direction_info = direction_info;
+	textures_info	= (t_vec *)malloc(sizeof(t_vec));
+	cub->textures_info = textures_info;
 	check_free_exit(cub);
 	ceiling	= (t_vec *)malloc(sizeof(t_vec));
 	cub->ceiling = ceiling;
