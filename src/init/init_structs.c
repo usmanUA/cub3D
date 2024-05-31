@@ -12,38 +12,7 @@
 
 #include "../../include/cub3d.h"
 
-void	free_vecs(t_cub *cub, int exit_fail)
-{
-	// TODO: ALSO free what these vecs hold
-
-	vec_free(cub->textures_fds);
-	free(cub->textures_fds);
-	vec_free(cub->textures_info);
-	free(cub->textures_info);
-	vec_free(cub->floor);
-	free(cub->floor);
-	vec_free(cub->ceiling);
-	free(cub->ceiling);
-	vec_free(cub->map);
-	free(cub->map);
-	if (exit_fail == YES)
-		exit(EXIT_FAILURE);
-}
-
-void	check_free_exit(t_cub *cub)
-{
-	if (cub->textures_fds == NULL)
-		exit(EXIT_FAILURE);
-	if (cub->textures_info == NULL)
-		free_vecs(cub, YES);
-	if (cub->ceiling == NULL)
-		free_vecs(cub, YES);
-	if (cub->floor == NULL)
-		free_vecs(cub, YES);
-	if (cub->map == NULL)
-		free_vecs(cub, YES);
-}
-
+void	freecub_exit(t_cub *cub);
 
 void	init_inds(t_indices *inds)
 {
@@ -64,7 +33,7 @@ void	init_tex_count(t_count *count)
 
 static	void	init_vecs(t_cub *cub)
 {
-	vec_new(cub->textures_fds, 0, sizeof(int));
+	vec_new(cub->textures_paths, 0, sizeof(char **));
 	vec_new(cub->textures_info, 0, sizeof(int));
 	vec_new(cub->ceiling, 0, sizeof(int)); // TODO: change int to what it is
 	vec_new(cub->floor, 0, sizeof(int)); // TODO: change int to what it is
@@ -73,33 +42,48 @@ static	void	init_vecs(t_cub *cub)
 
 static	void	alloc_init_vecs(t_cub *cub)
 {
-	t_vec	*textures_fds;
-	t_vec	*textures_info;
 	t_vec	*ceiling;
 	t_vec	*floor;
-	t_vec	*map;
 
-	textures_fds = (t_vec *)malloc(sizeof(t_vec));
-	cub->textures_fds = textures_fds;
-	check_free_exit(cub);
-	textures_info	= (t_vec *)malloc(sizeof(t_vec));
-	cub->textures_info = textures_info;
-	check_free_exit(cub);
 	ceiling	= (t_vec *)malloc(sizeof(t_vec));
+	if (ceiling == NULL)
+		freecub_exit(cub);
 	cub->ceiling = ceiling;
-	check_free_exit(cub);
 	floor	= (t_vec *)malloc(sizeof(t_vec));
+	if (floor == NULL)
+		freecub_exit(cub);
 	cub->floor = floor;
-	check_free_exit(cub);
-	map = (t_vec *)malloc(sizeof(t_vec));
-	cub->map = map;
-	check_free_exit(cub);
 	init_vecs(cub);
+}
+
+void	null_cub(t_cub *cub)
+{
+	cub->dir_info = 0;
+	cub->line = NULL;
+	cub->textures_info = NULL;
+	cub->map = NULL;
+	cub->floor = NULL;
+	cub->ceiling = NULL;
 }
 
 void	init_cub(t_cub *cub)
 {
-	cub->dir_info = 0;
-	cub->line = NULL;
+	t_vec	*textures_paths;
+	t_vec	*textures_info;
+	t_vec	*map;
+
+	null_cub(cub);
+	textures_paths = (t_vec *)malloc(sizeof(t_vec));
+	if (textures_paths == NULL)
+		exit(EXIT_FAILURE);
+	cub->textures_paths = textures_paths;
+	textures_info = (t_vec *)malloc(sizeof(t_vec));
+	if (textures_info == NULL)
+		freecub_exit(cub);
+	cub->textures_info = textures_info;
+	map = (t_vec *)malloc(sizeof(t_vec));
+	if (map  == NULL)
+		freecub_exit(cub);
+	cub->map = map;
 	alloc_init_vecs(cub);
 }

@@ -27,19 +27,20 @@ void	next_strings_end(char *line, int *end, int check_comma)
 	}
 }
 
-void	eof_malloc_check(t_cub *cub, int malloc_flag)
+void	eof_malloc_check(t_cub *cub, int malloc_flag, int map)
 {
 	// TODO: take this function where gnl is called
 	if (*cub->line == NULL && malloc_flag == 1)
-		exit(EXIT_FAILURE); // TODO: free mem
-	if (*cub->line == NULL && malloc_flag == 0)
-		exit(EXIT_FAILURE); // TODO: free mem, print error
+		free_vecs(cub, NULL, YES, NO);
+		free_vecs(cub, NULL, YES, NO);
+	if (*cub->line == NULL && malloc_flag == 0 && map == NA)
+		free_vecs(cub, NULL, YES, YES);
 }
 
 void	free_exit(t_cub *cub, char **type_id)
 {
 	free(type_id);
-	exit(EXIT_FAILURE); // TODO: free mem (cub)
+	free_vecs(cub, NULL, YES, NO);
 }
 
 int	space_until_end(char *line)
@@ -80,7 +81,7 @@ void	check_invalid_color(t_cub *cub, t_indices *inds, char **rgb)
 	if (!ft_isspace(*cub->line[inds->end]))
 	{
 		free(*rgb);
-		exit(EXIT_FAILURE); // TODO: free mem, print error
+		free_vecs(cub, NULL, YES, YES);
 	}
 }
 
@@ -91,15 +92,15 @@ char	*next_rgb(t_cub *cub, t_indices *inds)
 	inds->st = inds->end;
 	skip_spaces(*cub->line, &inds->st);
 	if (*cub->line[inds->st] == '\0')
-		exit(EXIT_FAILURE); // TODO: free mem, print error
+		free_vecs(cub, NULL, YES, YES);
 	next_strings_end(*cub->line, &inds->end, 1);
 	rgb = ft_substr(*cub->line, inds->st, inds->end);
 	if (rgb == NULL)
-		exit(EXIT_FAILURE); // TODO: free mem
+		free_vecs(cub, NULL, YES, NO);
 	if (all_digits(rgb) != YES)
 	{
 		free(rgb);
-		exit(EXIT_FAILURE); // TODO: free mem, print error
+		free_vecs(cub, NULL, YES, NO);
 	}
 	--inds->counter; // NOTE: might not need this counter
 	if (inds->counter == 0) // NOTE: might not need this counter
@@ -111,7 +112,7 @@ void	skip_comma(t_cub *cub, t_indices *inds)
 {
 	skip_spaces(*cub->line, &inds->end);
 	if (*cub->line[inds->end] != ',')
-		exit(EXIT_FAILURE); // TODO: free mem, print error
+		free_vecs(cub, NULL, YES, YES);
 	inds->end++;
 }
 
@@ -140,7 +141,7 @@ void	parse_color(t_cub *cub, t_indices *inds, int type)
 		skip_comma(cub, inds);
 	}
 	if (inds->counter) // NOTE: might not need this counter
-		exit(EXIT_FAILURE); // TODO: free mem, print error
+		free_vecs(cub, NULL, YES, YES);
 }
 
 void	parse_push_colors(t_cub *cub, char **type_id, t_indices *inds, t_count *count)
@@ -209,11 +210,11 @@ int	type_identifier(t_cub *cub, t_indices *inds, t_count *count)
 	type_id_info = 42;
 	type_id = ft_substr(*cub->line, inds->st, inds->end);
 	if (type_id == NULL)
-		exit(EXIT_FAILURE); // TODO: free mem
+		free_vecs(cub, NULL, YES, NO);
 	identifiers_type(cub, &type_id, &type_id_info, count);
 	if (type_id_info != 42)
 	{
-		if (vec_push(cub->direction_info, &type_id_info) == 0)
+		if (vec_push(cub->textures_info, &type_id_info) == 0)
 			free_exit(cub, &type_id);
 		return (TEXTURE);
 	}
@@ -230,22 +231,21 @@ void	parse_push_textures(t_cub *cub, t_indices *inds)
 	inds->st = inds->end;
 	skip_spaces(*cub->line, &inds->st);
 	if (*cub->line[inds->st] == '\0')
-		exit(EXIT_FAILURE); // TODO: free mem, print error
+		free_vecs(cub, NULL, YES, YES);
 	inds->end = inds->st;
 	next_strings_end(*cub->line, &inds->end, 0);
 	// NOTE: the next 3 lines check if path is not followed by a spaces/+newline
 	skip_spaces(*cub->line, &inds->end);
 	if (*cub->line[inds->end] != '\0')
-		exit(EXIT_FAILURE); // TODO: free mem, print error
+		free_vecs(cub, NULL, YES, YES);
 	path = ft_substr(*cub->line, inds->st, inds->end);
 	if (path == NULL) // NOTE: malloc_fail
-		exit(EXIT_FAILURE); // TODO: free mem
-	fd = open_validate_file(cub, path, ".xpm");
-	free(path);
-	if (vec_push(cub->textures_fds, &fd) == 0)
+		free_vecs(cub, NULL, YES, NO);
+	open_validate_file(cub, path, ".xpm", YES);
+	if (vec_push(cub->textures_paths, &path) == 0)
 	{
-		close(fd);
-		exit(EXIT_FAILURE); // TODO: free mem
+		free(path);
+		free_vecs(cub, NULL, YES, NO);
 	}
 }
 
@@ -258,7 +258,7 @@ int	parse_push_lineinfo(t_cub *cub, int fd, t_count *count)
 	init_inds(&inds);
 	malloc_flag = 0;
 	*cub->line = get_next_line(fd, &malloc_flag);
-	eof_malloc_check(cub, *cub->line, malloc_flag);
+	eof_malloc_check(cub, malloc_flag, NA);
 	skip_spaces(*cub->line, &inds.st);
 	c = *cub->line[inds.st];
 	if (c == '1' || c == '\0')
@@ -294,7 +294,7 @@ void	parse_until_map(t_cub *cub, int fd)
 			tids++;
 	}
 	if (tids < TOT_TIDS)
-		free_vecs(cub, YES);
+		free_vecs(cub, NULL, YES, YES);
 }
 
 void	validate_push_horizontal(t_cub *cub)
@@ -307,7 +307,7 @@ void	validate_push_horizontal(t_cub *cub)
 	if (vec_push(cub->map, &dup_line) == 0)
 	{
 		free(dup_line);
-		exit(EXIT_FAILURE); // TODO: free mem
+		free_vecs(cub, NULL, YES, NO);
 	}
 }
 
@@ -321,7 +321,7 @@ void	validate_push_middle(t_cub *cub)
 	if (vec_push(cub->map, &dup_line) == 0)
 	{
 		free(dup_line);
-		exit(EXIT_FAILURE); // TODO: free mem
+		free_vecs(cub, NULL, YES, NO);
 	}
 }
 
@@ -338,7 +338,7 @@ int	last_line(t_cub *cub)
 			break ;
 	}
 	if (ind == len)
-		exit(EXIT_FAILURE); // TODO: free mem, print error
+		free_vecs(cub, NULL, YES, YES);
 	ind = -1;
 	while (++ind < len)
 	{
@@ -355,19 +355,19 @@ void	parse_map(t_cub *cub, int fd)
 	malloc_flag = 0;
 	validate_push_horizontal(cub);
 	*cub->line = get_next_line(fd, &malloc_flag);
-	eof_malloc_check(cub, malloc_flag);
+	eof_malloc_check(cub, malloc_flag, YES);
 	while (*cub->line)
 	{
-		if (last_line(cub))
+		if (last_line(cub) == YES)
 			break ;
 		if (*cub->line[0] == '\0' || *cub->line[0] == '0')
-			exit(EXIT_FAILURE); // TODO: free mem, print error
+			free_vecs(cub, NULL, YES, YES);
 		validate_push_middle(cub);
 		*cub->line = get_next_line(fd, &malloc_flag);
-		eof_malloc_check(cub, malloc_flag);
+		eof_malloc_check(cub, malloc_flag, YES);
 	}
 	if (*cub->line == NULL)
-		exit(EXIT_FAILURE); // TODO: free mem, print error
+		free_vecs(cub, NULL, YES, YES);
 	validate_push_horizontal(cub);
 }
 
@@ -375,7 +375,7 @@ void	parse_file(t_cub *cub, char *map_path)
 {
 	int	fd;
 
-	fd = open_validate_file(cub, map_path, ".cub");
+	fd = open_validate_file(cub, map_path, ".cub", NA);
 	parse_until_map(cub, fd);
 	parse_map(cub, fd);
 	close(fd);
