@@ -36,9 +36,7 @@ void	free_vecs(t_cub *cub, char *map_path, int exit_fail, int print_err)
 	// TODO: ALSO free what these vecs hold
 
 	if (print_err == YES)
-	{
 		file_error(map_path, 42);
-	}
 	if (cub->line && *cub->line)
 		free(*cub->line);
 	if (cub->textures_paths && cub->textures_paths->len)

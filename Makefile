@@ -19,10 +19,6 @@ DEPFLAGS	=	-c -MT $$@ -MMD -MP -MF $(DEPSDIR)/$$*.d
 SCREENCLR	:=	printf "\033c"
 SLEEP		:=	sleep .1
 
-RL_FLG		:=	-lreadline
-RL_LIB		:=	-L ~/.brew/Cellar/readline/8.2.10/lib
-RL_INC		:=	-I ~/.brew/Cellar/readline/8.2.10/include
-
 MODULES		:=	main \
 				init \
 				parser \
@@ -61,7 +57,7 @@ vpath %.c $(SOURCEDIR)
 
 define cc_cmd
 $1/%.o: %.c | $(BUILDDIR) $(DEPENDDIR)
-	@if ! $(CC) -g $(INCS) $(RL_INC) $(DEPFLAGS) $$< -o $$@ 2> $(ERRTXT); then \
+	@if ! $(CC) -g $(INCS) $(DEPFLAGS) $$< -o $$@ 2> $(ERRTXT); then \
 		printf "$(R)$(B)\nERROR!\n$(F)$(T)\n"; \
 		printf "$(V)Unable to create object file:$(T)\n\n"; \
 		printf "$(R)$(B)$$@$(T)\n"; \
@@ -83,7 +79,7 @@ $(LIBVEC):
 	@make title
 
 $(NAME): $(OBJS)
-	@$(CC) -g $(INCS) $(RL_INC) $^ $(LIBVEC) $(LIBFT) $(RL_LIB) $(RL_FLG) -o $@
+	@$(CC) -g $(INCS) $^ $(LIBVEC) $(LIBFT) -o $@
 	@make finish
 
 debug: CFLAGS += $(DEBUGFLAGS)

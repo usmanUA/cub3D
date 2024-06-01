@@ -11,6 +11,7 @@
 /* ************************************************************************** */
 
 #include "../../include/cub3d.h"
+#include <stdio.h>
 
 void	init_tex_count(t_count *count);
 void	init_inds(t_indices *inds);
@@ -31,7 +32,6 @@ void	eof_malloc_check(t_cub *cub, int malloc_flag, int map)
 {
 	// TODO: take this function where gnl is called
 	if (*cub->line == NULL && malloc_flag == 1)
-		free_vecs(cub, NULL, YES, NO);
 		free_vecs(cub, NULL, YES, NO);
 	if (*cub->line == NULL && malloc_flag == 0 && map == NA)
 		free_vecs(cub, NULL, YES, YES);
@@ -239,6 +239,7 @@ void	parse_push_textures(t_cub *cub, t_indices *inds)
 	if (*cub->line[inds->end] != '\0')
 		free_vecs(cub, NULL, YES, YES);
 	path = ft_substr(*cub->line, inds->st, inds->end);
+	printf("textures_paths: %s\n", path);
 	if (path == NULL) // NOTE: malloc_fail
 		free_vecs(cub, NULL, YES, NO);
 	open_validate_file(cub, path, ".xpm", YES);
@@ -354,6 +355,7 @@ void	parse_map(t_cub *cub, int fd)
 
 	malloc_flag = 0;
 	validate_push_horizontal(cub);
+	printf("map's first line: %s\n", *cub->line);
 	*cub->line = get_next_line(fd, &malloc_flag);
 	eof_malloc_check(cub, malloc_flag, YES);
 	while (*cub->line)

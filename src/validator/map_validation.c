@@ -11,6 +11,7 @@
 /* ************************************************************************** */
 
 #include "../../include/cub3d.h"
+#include <stdio.h>
 
 void	skip_spaces(char *s, int *ind);
 
@@ -143,9 +144,13 @@ int	open_validate_file(t_cub *cub, char *map_path, char *ext, int texture_path)
 
 	fd = -2;
 	path_len = ft_strlen(map_path);
+	printf("path_len: %zu\n", path_len);
 	bfr_ext = path_len - 4;
-	if (ft_strncmp(ext, &map_path[path_len], path_len - bfr_ext))
+	printf("bfr_ext: %zu\n", bfr_ext);
+//	printf("ext: %s and ext from path: %s\n", ext, &map_path)
+	if (ft_strncmp(ext, &map_path[bfr_ext], path_len - bfr_ext))
 		free_vecs(cub, NULL, YES, YES);
+	printf("here\n");
 	fd = open(map_path, O_DIRECTORY);
 	if (fd != -1)
 	{
