@@ -42,6 +42,7 @@ typedef struct	s_cub
 {
 	int	dir_info;
 	char	**line;
+	char	*file;
 	t_vec	*textures_paths;
 	t_vec	*textures_info;
 	t_vec	*floor;	
@@ -52,11 +53,11 @@ typedef struct	s_cub
 
 void	init_cub(t_cub *cub);
 int	valid_map(char **argv);
-void	validate_horizontal(t_cub *cub);
-void	validate_middle(t_cub *cub);
+void	validate_horizontal(t_cub *cub, char *line);
+void	validate_middle(t_cub *cub, char *line);
 int	open_validate_file(t_cub *cub, char *map_path, char *ext, int texture_path);
 void	validate_type_identifier(t_cub *cub, char **type_id);
 void	parse_file(t_cub *cub, char *map_path);
 
-void	free_vecs(t_cub *cub, char *map_path, int exit_fail, int print_err);
+void	free_vecs(t_cub *cub, int exit_fail, int print_err);
 #endif

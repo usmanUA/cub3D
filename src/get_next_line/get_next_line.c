@@ -80,7 +80,7 @@ char	*get_next_line(int fd, int *malloc_flag)
 	{
 		if (*lines)
 			line = ft_writeline(lines, line, malloc_flag);
-		if (line == NULL)
+		if (*lines && line == NULL)
 			return (ft_freebuff_return(lines));
 		if (ft_movebuff(lines))
 			break ;

@@ -26,8 +26,10 @@ int	main(int argc, char **argv)
 	{
 		init_cub(&cub);
 		parse_file(&cub, argv[1]);
-		free_vecs(&cub, NULL, NO, NO);
-		printf("map file is a good map file\n");
+		cub.file = NULL;
+		cub.file = argv[1];
+		free_vecs(&cub, NO, NO);
+		printf("%s is a good map file\n", argv[1]);
 		return (SUCCESS);
 	}
 	game_usage();

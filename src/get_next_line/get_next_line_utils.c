@@ -21,18 +21,6 @@ void	ft_freestr(char *s)
 	}
 }
 
-size_t	ft_strlen(const char *s)
-{
-	size_t	len;
-
-	if (!s)
-		return (0);
-	len = 0;
-	while (s[len] != '\0')
-		len++;
-	return (len);
-}
-
 void	ft_copylines(char **new_line, char *line, char *lines)
 {
 	int	ind;
@@ -51,8 +39,6 @@ void	ft_copylines(char **new_line, char *line, char *lines)
 		(*new_line)[ind++] = lines[i];
 		i++;
 	}
-	if (ft_newline(lines))
-		(*new_line)[ind++] = '\n';
 	(*new_line)[ind] = '\0';
 }
 
@@ -63,7 +49,10 @@ char	*ft_writeline(char *lines, char *line, int *malloc_flag)
 
 	lines_len = ft_strlen(lines);
 	if (ft_newline(lines))
+	{
 		lines_len = ft_newline(lines);
+		lines_len--;
+	}
 	new_line = malloc(lines_len + ft_strlen(line) + 1);
 	if (!new_line)
 	{
