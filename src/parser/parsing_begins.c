@@ -267,6 +267,16 @@ void	parse_push_textures(t_cub *cub, t_indices *inds)
 	}
 }
 
+int	not_yes(t_cub *cub, char c)
+{
+	if (c == '\0')
+	{
+		free(*cub->line);
+		*cub->line = NULL;
+		return (EMP_LINE);
+	}
+	return (NA);
+}
 int	parse_push_lineinfo(t_cub *cub, int fd, t_count *count)
 {
 	t_indices	inds;
@@ -282,15 +292,7 @@ int	parse_push_lineinfo(t_cub *cub, int fd, t_count *count)
 	skip_spaces(*cub->line, &inds.st);
 	c = line[inds.st];
 	if (c == '1' || c == '\0')
-	{
-		if (c == '\0')
-		{
-			free(*cub->line);
-			*cub->line = NULL;
-			return (EMP_LINE);
-		}
-		return (NA);
-	}
+		return (not_yes(cub, c));
 	inds.end = inds.st;
 	next_strings_end(*cub->line, &inds.end, 0);
 	if (type_identifier(cub, &inds, count) == TEXTURE)
