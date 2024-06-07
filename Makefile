@@ -1,9 +1,20 @@
+#******************************************************************************#
+#                                                                              #
+#                                                         :::      ::::::::    #
+#    Makefile                                           :+:      :+:    :+:    #
+#                                                     +:+ +:+         +:+      #
+#    By: uahmed <uahmed@student.hive.fi>            +#+  +:+       +#+         #
+#                                                 +#+#+#+#+#+   +#+            #
+#    Created: 2024/06/07 13:40:03 by uahmed            #+#    #+#              #
+#    Updated: 2024/06/07 13:40:05 by uahmed           ###   ########.fr        #
+#                                                                              #
+#******************************************************************************#
 
-NAME 		:=	cub3d
+NAME 		:=	cub3D
 ERRTXT		:=	error.txt
 OBJSDIR		:=	build
-INCSDIR		:=	include
-SRCSDIR		:=	src
+INCSDIR		:=	includes
+SRCSDIR		:=	srcs
 DEPSDIR		:=	.deps
 LIBFTDIR	:=	libft
 LIBVECDIR 	:=	vec
@@ -14,25 +25,36 @@ RM			:=	rm -rf
 AR			:=	ar -rcs
 CC			:=	cc
 CFLAGS		:=	-Wall -Werror -Wextra
-DEBUGFLAGS	=	-g -fsanitize=address
-DEPFLAGS	=	-c -MT $$@ -MMD -MP -MF $(DEPSDIR)/$$*.d
+DEBUGFLAGS	:=	-g -fsanitize=address
+DEPFLAGS	:=	-c -MT $$@ -MMD -MP -MF $(DEPSDIR)/$$*.d
 SCREENCLR	:=	printf "\033c"
 SLEEP		:=	sleep .1
+
+MLXDIR		:=	MLX42
+MLXLIB		:=	$(MLXDIR)/$(OBJSDIR)/libmlx42.a
+MLXBREW		:=	-L "$(HOME)/.homebrew/opt/glfw/lib/"
+MLXFLAGS	:=	-ldl -lglfw -pthread -lm
+
+ifeq ($(shell uname), Darwin)
+	MLXFLAGS += $(MLXBREW)
+endif
 
 MODULES		:=	main \
 				init \
 				parser \
-				free \
-				validator \
 				get_next_line \
+				validator \
+				raycaster \
+				free \
 
-SOURCES 	= 	main.c \
+SOURCES 	:= 	main.c \
 			init_structs.c \
-			map_validation.c \
 			parsing_begins.c \
-			free_mem.c \
+			map_validation.c \
 			get_next_line.c \
 			get_next_line_utils.c \
+			raycast.c \
+			free_mem.c \
 
 SOURCEDIR	:=	$(addprefix $(SRCSDIR)/, $(MODULES))
 BUILDDIR	:=	$(addprefix $(OBJSDIR)/, $(MODULES))
@@ -43,6 +65,7 @@ DEPS		:=	$(patsubst $(SRCSDIR)/%.c, $(DEPSDIR)/%.d, $(SRCS))
 INCS	 	:=	$(foreach header, $(INCSDIR), -I $(header))
 INCS	 	+=	$(foreach header, $(LIBVECDIR)/$(INCSDIR), -I $(header))
 INCS	 	+=	$(foreach header, $(LIBFTDIR)/$(INCSDIR), -I $(header))
+INCS	 	+=	$(foreach header, $(MLXDIR)/include/MLX42, -I $(header))
 
 F			=	=====================================
 B			=	\033[1m
@@ -68,7 +91,18 @@ $1/%.o: %.c | $(BUILDDIR) $(DEPENDDIR)
 	fi
 endef
 
-all: $(LIBFT) $(LIBVEC) $(NAME)
+all: $(MLXLIB) $(LIBFT) $(LIBVEC) $(NAME)
+
+$(MLXLIB):
+	@$(SCREENCLR)
+ifeq ("$(wildcard $(MLXDIR))", "")
+	@echo "$(G)$(B)$(MLXDIR)$(T)$(V) not found, commencing download.$(T)\n"
+	@git clone https://github.com/codam-coding-college/MLX42.git $(MLXDIR)
+else
+	@echo "\n$(V)Skipping download, $(G)$(B)$(MLXDIR)$(T)$(V) exists.$(T)"
+endif
+	@echo "\n$(V)Building $(G)$(B)MLX42$(T)$(V) binary...$(T)\n"
+	@cmake $(MLXDIR) -B $(MLXDIR)/build && make -C $(MLXDIR)/build -j4
 
 $(LIBFT):
 	@make --quiet -C $(LIBFTDIR) all
@@ -79,7 +113,7 @@ $(LIBVEC):
 	@make title
 
 $(NAME): $(OBJS)
-	@$(CC) -g $(INCS) $^ $(LIBVEC) $(LIBFT) -o $@
+	@$(CC) $(CFLAGS) $(INCS) $^ $(LIBVEC) $(LIBFT) $(MLXLIB) $(MLXFLAGS) -o $@
 	@make finish
 
 debug: CFLAGS += $(DEBUGFLAGS)
@@ -93,27 +127,21 @@ clean:
 fclean: clean
 	@make --quiet -C $(LIBFTDIR) fclean
 	@make --quiet -C $(LIBVECDIR) fclean
+	@$(RM) $(MLXDIR)/$(OBJSDIR)
 	@$(RM) $(NAME)
 
 re: fclean all
 
+nm:
+	@$(foreach header, $(INCSDIR), norminette -R CheckDefine $(header))
+	@$(foreach source, $(SRCSDIR), norminette -R CheckForbiddenSourceHeader $(source))
+
 title:
 	@$(SCREENCLR) && printf "\n"
-	@printf "$(C)                                    .--,-\`\`-.                   $(T)\n"
-	@printf "$(C)  ,----..                  ,---,.  /   /     '.      ,---,      $(T)\n"
-	@printf "$(C) /   /   \\         ,--,  ,'  .'  \\/ ../        ;   .'  .' \`\\    $(T)\n"
-	@printf "$(C)|   :     :      ,'_ /|,---.' .' |\\ \`\`\\  .\`-    ',---.'     \\   $(T)\n"
-	@printf "$(C).   |  ;. / .--. |  | :|   |  |: | \\___\\/   \\   :|   |  .\`\\  |  $(T)\n"
-	@printf "$(C).   ; /--\`,'_ /| :  . |:   :  :  /      \\   :   |:   : |  '  |  $(T)\n"
-	@printf "$(C);   | ;   |  ' | |  . .:   |    ;       /  /   / |   ' '  ;  :  $(T)\n"
-	@printf "$(C)|   : |   |  | ' |  | ||   :     \\      \\  \\   \\ '   | ;  .  |  $(T)\n"
-	@printf "$(C).   | '___:  | | :  ' ;|   |   . |  ___ /   :   ||   | :  |  '  $(T)\n"
-	@printf "$(C)'   ; : .'|  ; ' |  | ''   :  '; | /   /\\   /   :'   : | /  ;   $(T)\n"
-	@printf "$(C)'   | '/  :  | : ;  ; ||   |  | ; / ,,/  ',-    .|   | '\` ,/    $(T)\n"
-	@printf "$(C)|   :    /'  :  \`--'   \\   :   /  \\ ''\\        ; ;   :  .'      $(T)\n"
-	@printf "$(C) \\   \\ .' :  ,      .-./   | ,'    \\   \\     .'  |   ,.'        $(T)\n"
-	@printf "$(C)  \`---\`    \`--\`----'   \`----'       \`--\`-,,-'    '---'\n"
-
+	@printf "$(C)╔═╗╦ ╦╔╗ ╔═╗╔╦╗$(T)\n"
+	@printf "$(C)║  ║ ║╠╩╗║╣  ║║  by tkartasl$(T)\n"
+	@printf "$(C)╚═╝╚═╝╚═╝╚═╝═╩╝   & uahmed$(T)\n"
+	@printf "$(G)$(B)$(F)\n$(T)\n"
 
 finish:
 	@printf "\n$(G)$(B)$(F)$(T)\n"

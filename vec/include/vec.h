@@ -9,10 +9,11 @@
 /*   Updated: 2024/04/12 14:13:19 by uahmed           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
+
 #ifndef VEC_H
 # define VEC_H
 
-# include "../../libft/include/libft.h"
+# include "../../libft/includes/libft.h"
 # include "stdbool.h"
 # include "stdlib.h"
 # include "string.h"

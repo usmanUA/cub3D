@@ -13,8 +13,8 @@
 NAME		:=	libft.a
 ERRTXT		:=	error.txt
 OBJSDIR		:=	build
-INCSDIR		:=	include
-SRCSDIR		:=	src
+INCSDIR		:=	includes
+SRCSDIR		:=	srcs
 DEPSDIR		:=	.deps
 
 RM			:=	rm -rf
@@ -26,53 +26,61 @@ DEPFLAGS	=	-c -MT $$@ -MMD -MP -MF $(DEPSDIR)/$$*.d
 SCREENCLR	:=	printf "\033c"
 SLEEP		:=	sleep .1
 
-SOURCES		:=	get_next_line_utils.c\
-			get_next_line.c\
-			ft_atoi.c\
-			ft_bzero.c\
-			ft_calloc.c\
-			ft_isalnum.c\
-			ft_isalpha.c\
-			ft_isascii.c\
-			ft_isdigit.c\
-			ft_isprint.c\
+SOURCES		:=	ft_atoi.c\
+			ft_memcmp.c \
+			ft_strdup.c	\
+			ft_strtrim.c \
+			ft_bzero.c \
+			ft_memcpy.c \
+			ft_striteri.c \
+			ft_substr.c \
+			ft_calloc.c \
+			ft_memmove.c \
+			ft_strjoin.c \
+			ft_tolower.c \
+			ft_isalnum.c \
 			ft_isspace.c \
-			ft_ispresent.c \
-			ft_itoa.c\
-			ft_lstadd_back_bonus.c\
-			ft_lstadd_front_bonus.c\
-			ft_lstclear_bonus.c\
-			ft_lstdelone_bonus.c\
-			ft_lstiter_bonus.c\
-			ft_lstlast_bonus.c\
-			ft_lstmap_bonus.c\
+			ft_memset.c \
+			ft_strlcat.c \
+			ft_toupper.c \
+			ft_isalpha.c \
+			ft_putchar_fd.c \
+			ft_strlcpy.c \
+			ft_isascii.c \
+			ft_putendl_fd.c \
+			ft_strlen.c \
+			ft_isdigit.c \
+			ft_putnbr_fd.c \
+			ft_strmapi.c \
+			ft_isprint.c \
+			ft_putstr_fd.c \
+			ft_strncmp.c \
+			ft_itoa.c \
+			ft_split.c \
+			ft_strnstr.c \
+			ft_memchr.c \
+			ft_strchr.c	\
+			ft_strrchr.c \
 			ft_lstnew_bonus.c\
-			ft_lstsize_bonus.c\
-			ft_memchr.c\
-			ft_memcmp.c\
-			ft_memcpy.c\
-			ft_memset.c\
-			ft_memmove.c\
-			ft_putchar_fd.c\
-			ft_putendl_fd.c\
-			ft_putnbr_fd.c\
-			ft_putstr_fd.c\
-			ft_split.c\
-			ft_strchr.c\
-			ft_strdup.c\
-			ft_striteri.c\
-			ft_strjoin.c\
-			ft_strlcat.c\
-			ft_strlcpy.c\
-			ft_strlen.c\
-			ft_strmapi.c\
-			ft_strncmp.c\
-			ft_strnstr.c\
-			ft_strrchr.c\
-			ft_strtrim.c\
-			ft_substr.c\
-			ft_tolower.c\
-			ft_toupper.c\
+			ft_lstsize_bonus.c \
+			ft_lstlast_bonus.c \
+			ft_lstadd_back_bonus.c \
+			ft_lstadd_front_bonus.c \
+			ft_lstdelone_bonus.c \
+			ft_lstiter_bonus.c \
+			ft_lstclear_bonus.c \
+			ft_lstmap_bonus.c \
+			ft_printf.c \
+			ft_printf_utils.c \
+			get_next_line.c \
+			get_next_line_utils.c \
+			ft_recursive_power.c \
+			ft_free_pointer_array.c \
+			ft_strjoin_free.c \
+			ft_strndup.c \
+			ft_atol.c \
+			ft_skip_whitespace.c
+
 
 SOURCEDIR	:=	$(SRCSDIR)
 BUILDDIR	:=	$(OBJSDIR)
@@ -126,7 +134,7 @@ title:
 	@$(SCREENCLR) && printf "\n"
 	@printf "$(C)╦  ╦╔╗ ╔═╗╔╦╗$(T)\n"
 	@printf "$(C)║  ║╠╩╗╠╣  ║ $(T)\n"
-	@printf "$(C)╩═╝╩╚═╝╚   ╩             by mkorpela$(T)\n"
+	@printf "$(C)╩═╝╩╚═╝╚   ╩             by tkartasl$(T)\n"
 	@printf "$(G)$(B)$(F)\n$(T)\n"
 
 finish:
