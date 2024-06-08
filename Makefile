@@ -32,7 +32,7 @@ SLEEP		:=	sleep .1
 
 MLXDIR		:=	MLX42
 MLXLIB		:=	$(MLXDIR)/$(OBJSDIR)/libmlx42.a
-MLXBREW		:=	-L "$(HOME)/.homebrew/opt/glfw/lib/"
+MLXBREW		:=	-L "$(HOME)/homebrew/opt/glfw/lib/"
 MLXFLAGS	:=	-ldl -lglfw -pthread -lm
 
 ifeq ($(shell uname), Darwin)
@@ -45,15 +45,23 @@ MODULES		:=	main \
 				get_next_line \
 				validator \
 				raycaster \
+				error \
 				free \
 
 SOURCES 	:= 	main.c \
 			init_structs.c \
 			parsing_begins.c \
+			parse_map.c \
+			parse_validate_colors.c \
+			parse_until_map.c \
+			parse_validate_textures.c \
+			type_identifiers_validation.c \
 			map_validation.c \
+			files_path_validation.c \
 			get_next_line.c \
 			get_next_line_utils.c \
 			raycast.c \
+			errors.c \
 			free_mem.c \
 
 SOURCEDIR	:=	$(addprefix $(SRCSDIR)/, $(MODULES))

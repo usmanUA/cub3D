@@ -12,6 +12,11 @@
 
 # include "../../includes/cub3d.h"
 
+void	init_inds(t_indices *inds);
+void	init_tex_count(t_count *count);
+void	parse_push_textures(t_cub *cub, t_indices *inds);
+void	parse_push_colors(t_cub *cub, char **type_id, t_indices *inds, t_count *count);
+
 static	int	not_yes(t_cub *cub, char c)
 {
 	if (c == '\0')
@@ -23,39 +28,31 @@ static	int	not_yes(t_cub *cub, char c)
 	return (NA);
 }
 
-static	void	ea_identifier(t_cub *cub, char **type_id, int *type_info, t_count *count)
-{
-	count->ea++;
-	if (count->ea > 1)
-		free_exit(cub, type_id, YES);
-	*type_info = EA;
-}
-
 static	void	identifiers_type(t_cub *cub, char **type_id, int *type_info, t_count *count)
 {	
 	if (!ft_strncmp(*type_id, "NO", 2))
 	{
 		count->no++;
-		if (count->no > 1)
-			free_exit(cub, type_id, YES);
 		*type_info = NO;
 	}
 	if (!ft_strncmp(*type_id, "SO", 2))
 	{
 		count->so++;
-		if (count->so > 1)
-			free_exit(cub, type_id, YES);
 		*type_info = SO;
 	}
 	if (!ft_strncmp(*type_id, "WE", 2))
 	{
 		count->we++;
-		if (count->we > 1)
-			free_exit(cub, type_id, YES);
 		*type_info = WE;
 	}
 	if (!ft_strncmp(*type_id, "EA", 2))
-		ea_identifier(cub, type_id, type_info, count);
+	{
+		count->ea++;
+		*type_info = EA;
+	}
+	if (count->no > 1 || count->so > 1 || count->we > 1
+			|| count->ea > 1)
+			free_exit(cub, type_id, YES);
 }
 
 static	int	type_identifier(t_cub *cub, t_indices *inds, t_count *count)
@@ -81,7 +78,7 @@ static	int	type_identifier(t_cub *cub, t_indices *inds, t_count *count)
 	return (42);
 }
 
-int	parse_push_lineinfo(t_cub *cub, int fd, t_count *count)
+static	int	parse_push_lineinfo(t_cub *cub, int fd, t_count *count)
 {
 	t_indices	inds;
 	char		c;

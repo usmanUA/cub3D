@@ -97,6 +97,9 @@ typedef struct s_data
 
 void	init_cub(t_cub *cub);
 int	valid_map(char **argv);
+void	skip_spaces(char *s, int *ind);
+void	next_strings_end(char *line, int *end, int check_comma);
+void	eof_malloc_check(t_cub *cub, int malloc_flag, int map, int fd);
 void	validate_horizontal(t_cub *cub, char *line);
 void	validate_middle(t_cub *cub, char *line);
 int	open_validate_file(t_cub *cub, char *map_path, char *ext, int texture_path);
@@ -104,6 +107,7 @@ void	validate_type_identifier(t_cub *cub, char **type_id);
 void	parse_file(t_cub *cub, char *map_path);
 
 int32_t	raycaster(void);
+void	free_exit(t_cub *cub, char **type_id, int print_err);
 void	free_vecs(t_cub *cub, int exit_fail, int print_err);
 
 #endif

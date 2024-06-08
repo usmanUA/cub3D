@@ -12,10 +12,7 @@
 
 #include "../../includes/cub3d.h"
 
-void	game_usage(void)
-{
-	printf("%s\n", USAGE);
-}
+void	game_usage(void);
 
 int	main(int argc, char **argv)
 {
@@ -29,8 +26,8 @@ int	main(int argc, char **argv)
 		cub.file = argv[1];
 		free_vecs(&cub, NO, NO);
 		printf("%s is a good map file\n", argv[1]);
-		return (SUCCESS);
-//		return (raycaster());
+//		return (SUCCESS);
+		return (raycaster());
 	}
 	game_usage();
 	return (SUCCESS);

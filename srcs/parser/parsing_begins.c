@@ -12,8 +12,8 @@
 
 #include "../../includes/cub3d.h"
 
-void	init_tex_count(t_count *count);
-void	init_inds(t_indices *inds);
+void	parse_until_map(t_cub *cub, int fd);
+void	parse_map(t_cub *cub, int fd);
 
 void	free_exit(t_cub *cub, char **type_id, int print_err)
 {

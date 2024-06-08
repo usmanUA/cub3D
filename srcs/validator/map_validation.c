@@ -12,34 +12,7 @@
 
 #include "../../includes/cub3d.h"
 
-void	skip_spaces(char *s, int *ind);
-
-void	file_error(char *path, int use_errno)
-{
-	if (use_errno == YES)
-	{
-		ft_putstr_fd("cub3d: ", 2);
-		ft_putstr_fd(path, 2);
-		ft_putstr_fd(": ", 2);
-		ft_putendl_fd(strerror(errno), 2);
-		ft_putstr_fd("", 2);
-	}
-	ft_putstr_fd("cub3d: ", 2);
-	ft_putstr_fd(path, 2);
-	ft_putendl_fd(": is not valid map file", 2);
-	exit(EXIT_FAILURE);
-}
-
-int	direction_char(char c)
-{
-	if (c == 'W' || c == 'N')
-		return (YES);
-	if (c == 'S' || c == 'E')
-		return (YES);
-	return (NA);
-}
-
-char	check_wall_unit(t_cub *cub, int *ind, int first)
+static	char	check_wall_unit(t_cub *cub, int *ind, int first)
 {
 	char	c;
 
@@ -51,39 +24,14 @@ char	check_wall_unit(t_cub *cub, int *ind, int first)
 	return (c);
 }
 
-void	check_direction_info(t_cub *cub, char c)
+static	void	check_update_direction_info(t_cub *cub, char c)
 {
 	if (cub->dir_info > 0)
 		free_vecs(cub, YES, YES);
 	cub->dir_info++;
 }
 
-void	check_zero_presence(t_cub *cub, char *line)
-{
-	int	ind;
-	int	len;
-	int	alphnum;
-
-	ind = -1;
-	alphnum = 0;
-	len = ft_strlen(line);
-	while (++ind < len)
-	{
-		if (!ft_isspace(line[ind]))
-			alphnum++;
-	}
-	if (alphnum == 3);
-		return ;
-	ind = -1;
-	while (++ind < len)
-	{
-		if (line[ind] == '0')
-			return ;
-	}
-	free_vecs(cub, YES, YES);
-}
-
-char	ones_surround_spaces(t_cub *cub, char c, char prev_c, int *ind)
+static	char	ones_surround_spaces(t_cub *cub, char c, char prev_c, int *ind)
 {
 	if (ft_isspace(c) && prev_c != '1')
 		free_vecs(cub, YES, YES);
@@ -104,7 +52,6 @@ void	validate_middle(t_cub *cub, char *line)
 	char	prev_c;
 	int	len;
 
-	//check_zero_presence(cub, line);
 	ind = 0;
 	len = ft_strlen(line);
 	prev_c = check_wall_unit(cub, &ind, YES);
@@ -114,8 +61,8 @@ void	validate_middle(t_cub *cub, char *line)
 		c = ones_surround_spaces(cub, c, prev_c, &ind);
 		if (c == '\0')
 			return ;
-		if (direction_char(c) == YES)
-			check_direction_info(cub, c);
+		if (c == 'W' || c == 'N' || c == 'S' || c == 'E')
+			check_update_direction_info(cub, c);
 		else if (c != '1' && c != '0')
 			free_vecs(cub, YES, YES);
 		prev_c = c;
@@ -123,7 +70,6 @@ void	validate_middle(t_cub *cub, char *line)
 		if (c == '\0')
 			return ;
 	}
-	//printf("fuck the line: %s\n", line);
 	check_wall_unit(cub, &ind, NA);
 }
 

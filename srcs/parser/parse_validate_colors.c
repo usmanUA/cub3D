@@ -12,6 +12,8 @@
 
 # include "../../includes/cub3d.h"
 
+void	check_invalid_color(t_cub *cub, char *line, t_indices *inds, char **rgb);
+
 static	int	all_digits(char *rgb)
 {
 	int	ind;
@@ -62,7 +64,7 @@ static	void	skip_comma(t_cub *cub, char *line, t_indices *inds, int count)
 	inds->end = inds->st;
 }
 
-void	parse_color(t_cub *cub, t_indices *inds, int type)
+static	void	parse_color(t_cub *cub, t_indices *inds, int type)
 {
 	char	*rgb_s;
 	int	rgb_n;
