@@ -11,6 +11,7 @@
 /* ************************************************************************** */
 
 # include "../../includes/cub3D.h"
+#include <stdio.h>
 
 static void error(void)
 {
@@ -146,7 +147,7 @@ int	check_overflow(t_data *data)
 
 double	check_vertical_hit(t_data *data)
 {
-	int arr[5][6] = {{1, 1, 1, 1, 1, 1}, {1, 0, 0, 0, 0, 1}, {1, 0, 0, 1, 0, 1}, {1, 0, 0, 0, 0, 1}, {1, 1, 1, 1, 1, 1}};
+//	int arr[5][6] = {{1, 1, 1, 1, 1, 1}, {1, 0, 0, 0, 0, 1}, {1, 0, 0, 1, 0, 1}, {1, 0, 0, 0, 0, 1}, {1, 1, 1, 1, 1, 1}};
 	double	ray_y = 0;
 	double	ray_x = 0;
 	int		i;
@@ -158,7 +159,7 @@ double	check_vertical_hit(t_data *data)
 	{
 		data->rayinfo->map_x = (int)ray_x >> 6;				
 		data->rayinfo->map_y = (int)ray_y >> 6;
-		if (check_overflow(data) == 0 && arr[data->rayinfo->map_y][data->rayinfo->map_x] == 1)
+		if (check_overflow(data) == 0 && data->map[data->rayinfo->map_x][data->rayinfo->map_y] == '1')
 		{
 			dist_v = ray_length(data->camera_x, data->camera_y, ray_x, ray_y);
 			i = MAX_VIEW_DIST;
@@ -175,7 +176,7 @@ double	check_vertical_hit(t_data *data)
 
 double	check_horizontal_hit(t_data *data)
 {
-	int arr[5][6] = {{1, 1, 1, 1, 1, 1}, {1, 0, 0, 0, 0, 1}, {1, 0, 0, 1, 0, 1}, {1, 0, 0, 0, 0, 1}, {1, 1, 1, 1, 1, 1}};
+	//int arr[5][6] = {{1, 1, 1, 1, 1, 1}, {1, 0, 0, 0, 0, 1}, {1, 0, 0, 1, 0, 1}, {1, 0, 0, 0, 0, 1}, {1, 1, 1, 1, 1, 1}};
 	double	ray_y = 0;
 	double	ray_x = 0;
 	int		i;
@@ -187,7 +188,7 @@ double	check_horizontal_hit(t_data *data)
 	{
 		data->rayinfo->map_x = (int)ray_x >> 6;				
 		data->rayinfo->map_y = (int)ray_y >> 6;
-		if (check_overflow(data) == 0 && arr[data->rayinfo->map_y][data->rayinfo->map_x] == 1)
+		if (check_overflow(data) == 0 && data->map[data->rayinfo->map_x][data->rayinfo->map_y] == '1')
 		{
 			dist = ray_length(data->camera_x, data->camera_y, ray_x, ray_y);
 			i = MAX_VIEW_DIST;
@@ -320,7 +321,21 @@ void	key_hook_movement(mlx_key_data_t keydata, void *param)
 		mlx_close_window(data->mlx);
 }
 
-int32_t	raycaster(void)
+void	extract_map_arr(t_cub *cub, t_data *data)
+{
+	int	ind;
+	char	**map;
+
+	ind = -1;
+	map = (char **)malloc(sizeof(char *) * (cub->map->len + 1));
+	// TODO: malloc check
+	while (++ind < cub->map->len)
+		map[ind] = *(char **)vec_get(cub->map, ind);
+	map[ind] = NULL;
+	data->map = map;
+}
+
+int32_t	raycaster(t_cub *cub)
 {
 	t_data		data;
 	t_rayinfo	rayinfo;
@@ -348,6 +363,7 @@ int32_t	raycaster(void)
 	data.height = 5;
 	data.camera_x = 96;
 	data.camera_y = 224;
+	extract_map_arr(cub, &data);
 	if (mlx_image_to_window(mlx, screen, 0, 0) < 0)
 		error();
 	cast_rays(&data);

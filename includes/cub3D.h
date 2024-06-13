@@ -91,6 +91,7 @@ typedef struct s_data
 	int			camera_y;
 	int			height;
 	int			width;
+	char		**map;
 	t_line		*line;
 	t_rayinfo	*rayinfo;
 }			t_data;
@@ -106,7 +107,7 @@ int	open_validate_file(t_cub *cub, char *map_path, char *ext, int texture_path);
 void	validate_type_identifier(t_cub *cub, char **type_id);
 void	parse_file(t_cub *cub, char *map_path);
 
-int32_t	raycaster(void);
+int32_t	raycaster(t_cub *cub);
 void	free_exit(t_cub *cub, char **type_id, int print_err);
 void	free_vecs(t_cub *cub, int exit_fail, int print_err);
 

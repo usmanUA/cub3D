@@ -24,10 +24,9 @@ int	main(int argc, char **argv)
 		parse_file(&cub, argv[1]);
 		cub.file = NULL;
 		cub.file = argv[1];
+		raycaster(&cub);
 		free_vecs(&cub, NO, NO);
-		printf("%s is a good map file\n", argv[1]);
-//		return (SUCCESS);
-		return (raycaster());
+		return (EXIT_SUCCESS);
 	}
 	game_usage();
 	return (SUCCESS);
