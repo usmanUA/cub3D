@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   libft.h                                            :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: vsavolai <vsavolai@student.hive.fi>        +#+  +:+       +#+        */
+/*   By: tkartasl <tkartasl@student.hive.fi>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/10/31 11:04:48 by tkartasl          #+#    #+#             */
-/*   Updated: 2024/04/03 14:05:25 by vsavolai         ###   ########.fr       */
+/*   Updated: 2024/07/10 10:09:17 by tkartasl         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -21,12 +21,12 @@
 # include <stdlib.h>
 # include <unistd.h>
 
+int		ft_isspace(int c);
 int		ft_isalpha(int c);
 int		ft_isdigit(int c);
 int		ft_isalnum(int c);
 int		ft_isascii(int c);
 int		ft_isprint(int c);
-int		ft_isspace(int c);
 int		ft_toupper(int c);
 int		ft_tolower(int c);
 int		ft_atoi(const char *str);
@@ -73,9 +73,9 @@ t_list	*ft_lstnew(void *content);
 t_list	*ft_lstlast(t_list *lst);
 t_list	*ft_lstmap(t_list *lst, void *(*f)(void *), void (*del)(void *));
 void	ft_lstdelone(t_list *lst, void (*del)(void *));
-void	ft_lstadd_front(t_list **lst, t_list *newlst);
+void	ft_lstadd_front(t_list **lst, t_list *new);
 void	ft_lstclear(t_list **lst, void (*del)(void *));
-void	ft_lstadd_back(t_list **lst, t_list *newlst);
+void	ft_lstadd_back(t_list **lst, t_list *new);
 void	ft_lstiter(t_list *lst, void (*f)(void *));
 int		ft_lstsize(t_list *lst);
 
@@ -84,7 +84,6 @@ int		ft_putstr(char *str);
 int		ft_putnbr(long int n);
 int		ft_write_fail_test(int count, int i);
 int		ft_printf(const char *s, ...);
-
 
 size_t	ft_gnl_strlen(const char *s);
 char	*ft_gnl_strchr(char *s, int c);

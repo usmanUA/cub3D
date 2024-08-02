@@ -1,14 +1,14 @@
-#******************************************************************************#
+# **************************************************************************** #
 #                                                                              #
 #                                                         :::      ::::::::    #
 #    Makefile                                           :+:      :+:    :+:    #
 #                                                     +:+ +:+         +:+      #
-#    By: uahmed <uahmed@student.hive.fi>            +#+  +:+       +#+         #
+#    By: tkartasl <tkartasl@student.hive.fi>        +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
-#    Created: 2024/06/07 13:40:03 by uahmed            #+#    #+#              #
-#    Updated: 2024/06/07 13:40:05 by uahmed           ###   ########.fr        #
+#    Created: 2024/02/05 12:11:11 by tkartasl          #+#    #+#              #
+#    Updated: 2024/07/12 11:32:57 by tkartasl         ###   ########.fr        #
 #                                                                              #
-#******************************************************************************#
+# **************************************************************************** #
 
 NAME 		:=	cub3D
 ERRTXT		:=	error.txt
@@ -32,7 +32,7 @@ SLEEP		:=	sleep .1
 
 MLXDIR		:=	MLX42
 MLXLIB		:=	$(MLXDIR)/$(OBJSDIR)/libmlx42.a
-MLXBREW		:=	-L "$(HOME)/homebrew/opt/glfw/lib/"
+MLXBREW		:=	-L "/opt/homebrew/opt/glfw/lib/"
 MLXFLAGS	:=	-ldl -lglfw -pthread -lm
 
 ifeq ($(shell uname), Darwin)
@@ -40,16 +40,19 @@ ifeq ($(shell uname), Darwin)
 endif
 
 MODULES		:=	main \
+				get_next_line \
 				init \
 				parser \
-				get_next_line \
 				validator \
+				multi_threader \
 				raycaster \
-				error \
+				minimap \
 				free \
 
 SOURCES 	:= 	main.c \
-			init_structs.c \
+			init_parser.c \
+			init_data.c \
+			init_mlx.c \
 			parsing_begins.c \
 			parse_map.c \
 			parse_validate_colors.c \
@@ -60,9 +63,22 @@ SOURCES 	:= 	main.c \
 			files_path_validation.c \
 			get_next_line.c \
 			get_next_line_utils.c \
+			multi_threads.c \
+			threads_helpers.c \
 			raycast.c \
+			minimap.c \
 			errors.c \
 			free_mem.c \
+			print_errors.c \
+			movement.c \
+			drawing.c \
+			get_colors.c \
+			dda.c \
+			raycast_utils.c \
+			wall_collision.c \
+			hooks.c \
+			get_textures.c \
+			wall_validation.c
 
 SOURCEDIR	:=	$(addprefix $(SRCSDIR)/, $(MODULES))
 BUILDDIR	:=	$(addprefix $(OBJSDIR)/, $(MODULES))

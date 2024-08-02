@@ -1,102 +1,99 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   free.c                                             :+:      :+:    :+:   */
+/*   free_mem.c                                         :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: uahmed <uahmed@student.hive.fi>            +#+  +:+       +#+        */
+/*   By: tkartasl <tkartasl@student.hive.fi>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/05/31 17:05:43 by uahmed            #+#    #+#             */
-/*   Updated: 2024/05/31 17:05:45 by uahmed           ###   ########.fr       */
+/*   Updated: 2024/07/26 13:21:04 by tkartasl         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
-# include "../../includes/cub3d.h"
+#include "cub3D.h"
 
-void	file_error(char *path, int use_errno);
+void		join_threads(t_data *data);
+void		destroy_locks(t_data *data);
+void		file_error(char *path, int use_errno, char *msg);
 
-static	void	free_lines(t_cub *cub, int lines)
+static void	free_map(char **map)
 {
-	int	ind;
+	unsigned int	ind;
 
-	ind = -1;
-	if (lines == TEXTURE)
-	{
-		while (++ind < cub->textures_paths->len)
-			free(*(char **)vec_get(cub->textures_paths, ind));
-	}
-	else if (lines == MAP)
-	{
-		while (++ind < cub->map->len)
-			free(*(char **)vec_get(cub->map, ind));
-	}
+	ind = 0;
+	while (map[ind] != NULL)
+		free(map[ind++]);
+	free(map);
+	map = NULL;
 }
 
-void	print_vecs(t_cub *cub)
+void	free_vecs(t_parser *parser, int exit_fail, char *msg, char **map)
 {
-	int	ind;
-
-	printf("textures_paths len: %d\n", cub->textures_paths->len);
-	ind = -1;
-	while (++ind < cub->textures_paths->len)
-		printf("path: %s\n", *(char **)vec_get(cub->textures_paths, ind));
-	printf("floor len: %zu\n", cub->floor->len);
-	ind = -1;
-	if (cub->floor->len > 0)
-	{
-		while (++ind < cub->floor->len)
-			printf("floor color: %d\n", *(int **)vec_get(cub->floor, ind));
-	}
-	printf("ceiling len: %zu\n", cub->ceiling->len);
-	ind = -1;
-	if (cub->ceiling->len > 0)
-	{
-		while (++ind < cub->ceiling->len)
-			printf("ceiling color: %d\n", *(int **)vec_get(cub->ceiling, ind));
-	}
-	printf("map len: %zu\n", cub->map->len);
-	ind = -1;
-	if (cub->map->len > 0)
-	{
-		while (++ind < cub->map->len)
-			printf("map line: %s\n", *(char **)vec_get(cub->map, ind));
-	}
-}
-
-void	free_vecs(t_cub *cub, int exit_fail, int print_err)
-{
-	// TODO: ALSO free what these vecs hold
-
-	print_vecs(cub);
-	if (print_err == YES)
-		file_error(cub->file, 42);
-	if (cub->line != NULL && *cub->line != NULL)
-		free(*cub->line);
-	if (cub->textures_paths && cub->textures_paths->len)
-		free_lines(cub, TEXTURE);
-	vec_free(cub->textures_paths);
-	free(cub->textures_paths);
-	vec_free(cub->textures_info);
-	free(cub->textures_info);
-	vec_free(cub->floor);
-	free(cub->floor);
-	vec_free(cub->ceiling);
-	free(cub->ceiling);
-	if (cub->map && cub->map->len)
-		free_lines(cub, MAP);
-	vec_free(cub->map);
-	free(cub->map);
+	if (msg != NULL)
+		file_error(parser->file, FT, msg);
+	if (map != NULL)
+		free_map(map);
+	vec_free(parser->textures_paths);
+	free(parser->textures_paths);
+	vec_free(parser->textures_info);
+	free(parser->textures_info);
+	vec_free(parser->floor);
+	free(parser->floor);
+	vec_free(parser->ceiling);
+	free(parser->ceiling);
+	vec_free(parser->map);
+	free(parser->map);
+	if (parser->line)
+		free(parser->line);
+	if (parser->next_line)
+		free(parser->next_line);
 	if (exit_fail == YES)
 		exit(EXIT_FAILURE);
 }
 
-void	freecub_exit(t_cub *cub)
+void	freeparser_exit(t_parser *parser)
 {
-	free(cub->textures_paths);
-	free(cub->textures_info);
-	free(cub->map);
-	free(cub->ceiling);
-	free(cub->floor);
+	free(parser->textures_paths);
+	parser->textures_paths = NULL;
+	free(parser->textures_info);
+	free(parser->map);
+	free(parser->ceiling);
+	free(parser->floor);
 	exit(EXIT_FAILURE);
 }
 
+void	stop_game(t_data *data)
+{
+	pthread_mutex_lock(&data->layers_lock[STOP_FLG]);
+	data->flag = STOP;
+	pthread_mutex_unlock(&data->layers_lock[STOP_FLG]);
+	join_threads(data);
+	destroy_locks(data);
+}
 
+
+void	freedata_exit(t_data *data, int exit_status, int terminate_mlx,
+		int premature)
+{
+	unsigned int	i;
+
+	if (premature == NA)
+		stop_game(data);
+	if (data->parser)
+		free_vecs(data->parser, NA, NULL, NULL);
+	if (terminate_mlx == YES)
+		mlx_terminate(data->mlx);
+	i = 0;
+	while ((int)i < data->tex_index)
+	{
+		if (data->texture->wall[i] != NULL)
+			mlx_delete_texture(data->texture->wall[i]);
+		i++;
+	}
+	vec_free(data->map_width);
+	free(data->map_width);
+	free_map(data->map);
+	free(data->texture);
+	free(data->rayinfo);
+	exit(exit_status);
+}

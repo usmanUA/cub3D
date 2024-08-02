@@ -3,18 +3,20 @@
 /*                                                        :::      ::::::::   */
 /*   parse_validate_colors.c                            :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: uahmed <uahmed@student.hive.fi>            +#+  +:+       +#+        */
+/*   By: tkartasl <tkartasl@student.hive.fi>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/06/07 15:44:48 by uahmed            #+#    #+#             */
-/*   Updated: 2024/06/07 15:44:51 by uahmed           ###   ########.fr       */
+/*   Updated: 2024/06/18 14:41:07 by username         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
-# include "../../includes/cub3d.h"
+#include "cub3D.h"
+#include <stdio.h>
 
-void	check_invalid_color(t_cub *cub, char *line, t_indices *inds, char **rgb);
+void		check_invalid_color(t_parser *parser, char *line, t_indices *inds,
+				char **rgb);
 
-static	int	all_digits(char *rgb)
+static int	all_digits(char *rgb)
 {
 	int	ind;
 
@@ -22,12 +24,12 @@ static	int	all_digits(char *rgb)
 	while (rgb[++ind])
 	{
 		if (!ft_isdigit(rgb[ind]))
-			return (42);
+			return (FT);
 	}
 	return (YES);
 }
 
-static	char	*next_rgb(t_cub *cub, char *line, t_indices *inds)
+static char	*next_rgb(t_parser *parser, char *line, t_indices *inds)
 {
 	char	*rgb;
 
@@ -35,82 +37,85 @@ static	char	*next_rgb(t_cub *cub, char *line, t_indices *inds)
 	skip_spaces(line, &inds->st);
 	inds->end = inds->st;
 	if (line[inds->st] == '\0')
-		free_vecs(cub, YES, YES);
+		free_vecs(parser, YES, INVALCOLOR, NULL);
 	next_strings_end(line, &inds->end, 1);
 	rgb = ft_substr(line, inds->st, inds->end - inds->st);
 	if (rgb == NULL)
-		free_vecs(cub, YES, NO);
+		free_vecs(parser, YES, NULL, NULL);
 	if (all_digits(rgb) != YES)
 	{
-		// TODO: look for negative rgb values
 		free(rgb);
-		free_vecs(cub, YES, YES);
+		free_vecs(parser, YES, INVALCOLOR, NULL);
 	}
-	--inds->counter; // NOTE: might not need this counter
-	if (inds->counter == 0) // NOTE: might not need this counter
-		check_invalid_color(cub, *cub->line, inds, &rgb);
+	--inds->counter;
+	if (inds->counter == 0)
+		check_invalid_color(parser, parser->line, inds, &rgb);
 	return (rgb);
 }
 
-static	void	skip_comma(t_cub *cub, char *line, t_indices *inds, int count)
+static void	skip_comma(t_parser *parser, char **rgb_s, t_indices *inds
+	, int count)
 {
+	free(*rgb_s);
 	if (count == 2)
 		return ;
 	inds->st = inds->end;
-	skip_spaces(line, &inds->st);
-	if (line[inds->st] != ',')
-		free_vecs(cub, YES, YES);
+	skip_spaces(parser->line, &inds->st);
+	if (parser->line[inds->st] != ',')
+		free_vecs(parser, YES, INVALCOLOR, NULL);
 	inds->st++;
 	inds->end = inds->st;
 }
 
-static	void	parse_color(t_cub *cub, t_indices *inds, int type)
+static void	parse_color(t_parser *parser, t_indices *inds, int type)
 {
 	char	*rgb_s;
-	int	rgb_n;
-	int	count;
+	int		rgb_n;
+	int		count;
 
 	count = -1;
-	while (inds->counter && ++count < 3) // NOTE: might not need this counter
+	while (inds->counter && ++count < 3)
 	{
-		rgb_s = next_rgb(cub, *cub->line, inds);
+		rgb_s = next_rgb(parser, parser->line, inds);
 		rgb_n = ft_atoi(rgb_s);
-		free(rgb_s);
+		if (rgb_n > 255 || rgb_n < 0)
+			free_exit(parser, &rgb_s, INVALCOLOR);
 		if (type == FLOOR)
 		{
-			if (vec_push(cub->floor, &rgb_n) == 0)
-				free_exit(cub, &rgb_s, NO);
+			if (vec_push(parser->floor, &rgb_n) == 0)
+				free_exit(parser, &rgb_s, INVALCOLOR);
 		}
 		else if (type == CEILING)
 		{
-			if (vec_push(cub->ceiling, &rgb_n) == 0)
-				free_exit(cub, &rgb_s, NO);
+			if (vec_push(parser->ceiling, &rgb_n) == 0)
+				free_exit(parser, &rgb_s, INVALCOLOR);
 		}
-		skip_comma(cub, *cub->line, inds, count);
+		skip_comma(parser, &rgb_s, inds, count);
 	}
-	if (inds->counter) // NOTE: might not need this counter
-		free_vecs(cub, YES, YES);
+	if (inds->counter)
+		free_vecs(parser, YES, INVALCOLOR, NULL);
 }
 
-void	parse_push_colors(t_cub *cub, char **type_id, t_indices *inds, t_count *count)
+void	parse_push_colors(t_parser *parser, char **type_id, t_indices *inds,
+		t_count *count)
 {
 	if (!ft_strncmp(*type_id, "C", 1))
 	{
 		count->c++;
 		if (count->c > 1)
-			free_exit(cub, type_id, YES);
+			free_exit(parser, type_id, MOREFLOOR);
 		free(*type_id);
-		parse_color(cub, inds, CEILING);
+		parse_color(parser, inds, CEILING);
 		return ;
 	}
 	if (!ft_strncmp(*type_id, "F", 1))
 	{
 		count->f++;
 		if (count->f > 1)
-			free_exit(cub, type_id, YES);
+			free_exit(parser, type_id, MORECEILING);
 		free(*type_id);
-		parse_color(cub, inds, FLOOR);
-		return;
+		parse_color(parser, inds, FLOOR);
+		return ;
 	}
-	free_exit(cub, type_id, YES); // TODO: print error
+	free_exit(parser, type_id, INVALCOLOR);
 }

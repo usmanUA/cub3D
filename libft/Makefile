@@ -38,8 +38,8 @@ SOURCES		:=	ft_atoi.c\
 			ft_memmove.c \
 			ft_strjoin.c \
 			ft_tolower.c \
-			ft_isalnum.c \
 			ft_isspace.c \
+			ft_isalnum.c \
 			ft_memset.c \
 			ft_strlcat.c \
 			ft_toupper.c \
@@ -72,14 +72,13 @@ SOURCES		:=	ft_atoi.c\
 			ft_lstmap_bonus.c \
 			ft_printf.c \
 			ft_printf_utils.c \
-			get_next_line.c \
-			get_next_line_utils.c \
 			ft_recursive_power.c \
 			ft_free_pointer_array.c \
 			ft_strjoin_free.c \
 			ft_strndup.c \
 			ft_atol.c \
 			ft_skip_whitespace.c
+			
 
 
 SOURCEDIR	:=	$(SRCSDIR)
